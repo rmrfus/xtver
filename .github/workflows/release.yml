@@ -34,10 +34,27 @@ jobs:
       - name: Build
         run: cargo zigbuild --target ${{ matrix.target }} --release --locked
 
-      - name: Stage binary
-        run: cp target/${{ matrix.target }}/release/xtver ${{ matrix.artifact }}
-
-      - name: Upload to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: ${{ matrix.artifact }}
+          name: ${{ matrix.artifact }}
+          path: target/${{ matrix.target }}/release/xtver
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Rename binaries
+        run: |
+          mv xtver-x86_64-linux/xtver xtver-x86_64-linux
+          mv xtver-aarch64-linux/xtver xtver-aarch64-linux
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            xtver-x86_64-linux
+            xtver-aarch64-linux
