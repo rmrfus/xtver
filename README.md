@@ -56,6 +56,13 @@ Requires Rust stable (1.70+).
 cargo install --git https://github.com/rmrfus/xtver
 ```
 
+### macOS (Homebrew)
+
+```sh
+brew tap rmrfus/xtver https://github.com/rmrfus/xtver
+brew install xtver
+```
+
 ### NixOS / nix
 
 A dev shell is provided via `flake.nix`:
@@ -82,6 +89,8 @@ cargo build --release
 5. Restores terminal settings unconditionally, parses and prints the version.
 
 Single file, one dependency (`libc`), no async, no tokio, nothing clever.
+
+Runs on Linux and macOS — all syscalls used (`cfmakeraw`, `poll`, `tcgetattr`) are POSIX.
 
 ## License
 

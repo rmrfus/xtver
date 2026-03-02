@@ -55,9 +55,25 @@ cargo watch -x run # live reload during dev
 `parse_response()` has unit tests — it's the only function with actual logic.
 Everything else is thin syscall glue; test it by running the binary in a real terminal.
 
+## macOS / Homebrew
+
+Formula lives in `Formula/xtver.rb` in this repo. Users install via:
+
+```sh
+brew tap rmrfus/xtver https://github.com/rmrfus/xtver
+brew install xtver
+```
+
+Homebrew builds from source using `cargo`. The formula url/sha256 must be updated
+on every release. Get the sha256 with:
+
+```sh
+curl -sL 'https://github.com/rmrfus/xtver/archive/refs/tags/vX.Y.Z.tar.gz' | sha256sum
+```
+
 ## Constraints
 
 - No async, no tokio, no heavy deps. One file, one dep (`libc`). Keep it that way.
-- Only targets Linux. The `libc::cfmakeraw` / `libc::poll` path is POSIX but
-  the flake only sets up `x86_64-linux`. macOS would need a separate flake target.
+- Targets Linux and macOS. All syscalls used (`cfmakeraw`, `poll`, `tcgetattr`) are
+  POSIX. The flake only sets up `x86_64-linux`; macOS users use Homebrew or plain cargo.
 - No CLI flags by design. The tool does one thing.
