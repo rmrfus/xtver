@@ -48,22 +48,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Delete existing release
-        run: gh release delete "${GITHUB_REF_NAME}" --yes --repo "${GITHUB_REPOSITORY}" || true
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - uses: actions/download-artifact@v4
 
-      - name: Stage binaries
+      - name: Publish release
         run: |
           gzip -9 -c xtver-x86_64-linux/xtver > xtver-x86_64-linux.gz
           gzip -9 -c xtver-aarch64-linux/xtver > xtver-aarch64-linux.gz
           gzip -9 -c xtver-armv7-linux/xtver > xtver-armv7-linux.gz
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            xtver-x86_64-linux.gz
-            xtver-aarch64-linux.gz
+          gh release delete "${GITHUB_REF_NAME}" --yes --repo "${GITHUB_REPOSITORY}" 2>/dev/null || true
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "${GITHUB_REF_NAME}" \
+            xtver-x86_64-linux.gz \
+            xtver-aarch64-linux.gz \
             xtver-armv7-linux.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
