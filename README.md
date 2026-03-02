@@ -107,4 +107,4 @@ Runs on Linux and macOS — all syscalls used (`cfmakeraw`, `poll`, `tcgetattr`)
 
 ## License
 
-MIT
+GPL-3.0-only

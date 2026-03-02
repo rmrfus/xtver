@@ -3,7 +3,7 @@ class Xtver < Formula
   homepage "https://github.com/rmrfus/xtver"
   url "https://github.com/rmrfus/xtver/archive/refs/tags/v0.1.0.tar.gz"
   sha256 "a27e0aa19ee9e7ff45e86d3d5969ab09f890b943a3aa8ce63dcfc2d23d98b2b5"
-  license "MIT"
+  license "GPL-3.0-only"
 
   depends_on "rust" => :build
 
