@@ -19,6 +19,8 @@ jobs:
             artifact: xtver-x86_64-linux
           - target: aarch64-unknown-linux-musl
             artifact: xtver-aarch64-linux
+          - target: armv7-unknown-linux-musleabihf
+            artifact: xtver-armv7-linux
 
     steps:
       - uses: actions/checkout@v4
@@ -52,9 +54,11 @@ jobs:
         run: |
           gzip -9 -c xtver-x86_64-linux/xtver > xtver-x86_64-linux.gz
           gzip -9 -c xtver-aarch64-linux/xtver > xtver-aarch64-linux.gz
+          gzip -9 -c xtver-armv7-linux/xtver > xtver-armv7-linux.gz
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             xtver-x86_64-linux.gz
             xtver-aarch64-linux.gz
+            xtver-armv7-linux.gz

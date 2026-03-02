@@ -125,7 +125,7 @@ inside tmux.
 
 ### Linux (static binary)
 
-Pre-built static musl binaries for x86\_64 and aarch64 (Raspberry Pi) are
+Pre-built static musl binaries for x86\_64, aarch64, and armv7 are
 attached to every [GitHub release](https://github.com/rmrfus/xtver/releases).
 
 ```sh
@@ -133,8 +133,12 @@ attached to every [GitHub release](https://github.com/rmrfus/xtver/releases).
 curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-x86_64-linux.gz \
   | gunzip > /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
 
-# aarch64 (Raspberry Pi, etc.)
+# aarch64 (Raspberry Pi 3/4/5 64-bit, ARM servers)
 curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-aarch64-linux.gz \
+  | gunzip > /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
+
+# armv7 (Raspberry Pi 2/3/4 32-bit)
+curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-armv7-linux.gz \
   | gunzip > /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
 ```
 
