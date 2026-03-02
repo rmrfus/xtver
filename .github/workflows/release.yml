@@ -50,14 +50,11 @@ jobs:
 
       - name: Stage binaries
         run: |
-          cp xtver-x86_64-linux/xtver /tmp/xtver-x86_64-linux
-          cp xtver-aarch64-linux/xtver /tmp/xtver-aarch64-linux
-          rm -rf xtver-x86_64-linux xtver-aarch64-linux
-          mv /tmp/xtver-x86_64-linux .
-          mv /tmp/xtver-aarch64-linux .
+          gzip -9 -c xtver-x86_64-linux/xtver > xtver-x86_64-linux.gz
+          gzip -9 -c xtver-aarch64-linux/xtver > xtver-aarch64-linux.gz
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            xtver-x86_64-linux
-            xtver-aarch64-linux
+            xtver-x86_64-linux.gz
+            xtver-aarch64-linux.gz
