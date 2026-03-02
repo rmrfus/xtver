@@ -18,10 +18,10 @@ Older terminals and terminal multiplexers acting as terminals will not respond â
 ## Usage
 
 ```
-xtver
+xtver [--mux]
 ```
 
-No flags, no arguments. Writes the version string to stdout and exits.
+Writes the version string to stdout and exits.
 
 Useful in scripts that need to branch on terminal capabilities:
 
@@ -32,6 +32,25 @@ else
     echo "terminal does not support XTVERSION"
 fi
 ```
+
+### --mux
+
+When running inside tmux, `--mux` appends the tmux version to the output,
+separated by a comma:
+
+```
+$ xtver --mux
+WezTerm 20240203-110809-5046fc22,tmux 3.3a
+```
+
+Easy to parse with `cut`:
+
+```sh
+xtver --mux | cut -d, -f1   # terminal
+xtver --mux | cut -d, -f2   # tmux
+```
+
+Exits with code 1 if used outside tmux.
 
 ## tmux
 
@@ -101,7 +120,7 @@ cargo watch -x run
 4. Sends `ESC [ > q` and waits up to 2 seconds for a DCS response (`ESC P > | <version> ESC \`).
 5. Restores terminal settings unconditionally, parses and prints the version.
 
-Single file, one dependency (`libc`), no async, no tokio, nothing clever.
+Single file, two dependencies (`libc`, `clap`), no async, no tokio, nothing clever.
 
 Runs on Linux and macOS â€” all syscalls used (`cfmakeraw`, `poll`, `tcgetattr`) are POSIX.
 

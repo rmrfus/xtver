@@ -17,7 +17,7 @@ into modules would be pointless ceremony.
 src/main.rs     all logic + unit tests
 flake.nix       dev shell (rust stable + rust-analyzer + cargo-watch)
 .envrc          use flake  (direnv auto-activation)
-Cargo.toml      one dep: libc
+Cargo.toml      deps: libc, clap
 ```
 
 ## Key implementation details
@@ -37,6 +37,10 @@ Requires `set -g allow-passthrough on` in tmux.conf.
 
 **Parsing**: find `>|` marker in the raw bytes, take everything after it, strip
 trailing `ESC \` if present.
+
+**--mux flag**: if set, also runs `tmux display-message -p '#{version}'` to get
+the tmux version and appends it to output as `<terminal>,tmux <version>`.
+Comma delimiter — parseable with `cut -d, -f1/2`. Errors if used outside tmux.
 
 ## Dev workflow
 
@@ -73,7 +77,7 @@ curl -sL 'https://github.com/rmrfus/xtver/archive/refs/tags/vX.Y.Z.tar.gz' | sha
 
 ## Constraints
 
-- No async, no tokio, no heavy deps. One file, one dep (`libc`). Keep it that way.
+- No async, no tokio. Deps: `libc` (syscalls) + `clap` (CLI). Keep it that way.
 - Targets Linux and macOS. All syscalls used (`cfmakeraw`, `poll`, `tcgetattr`) are
   POSIX. The flake only sets up `x86_64-linux`; macOS users use Homebrew or plain cargo.
-- No CLI flags by design. The tool does one thing.
+- CLI flags via clap derive. Keep the surface minimal.

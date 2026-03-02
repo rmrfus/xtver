@@ -5,6 +5,7 @@ xtver \- query the terminal emulator's name and version via XTVERSION
 .
 .SH SYNOPSIS
 .B xtver
+.RB [ \-\-mux ]
 .
 .SH DESCRIPTION
 .B xtver
@@ -22,14 +23,45 @@ status 1.
 Works correctly when stdin or stdout are redirected, since the terminal
 device is accessed directly.
 .
+.SH OPTIONS
+.TP
+.B \-\-mux
+Also query and append the tmux version to the output.
+Only valid when running inside tmux (i.e.\&
+.B $TMUX
+is set); exits with status 1 otherwise.
+.PP
+Output format with
+.BR \-\-mux :
+.PP
+.EX
+<terminal>,tmux <version>
+.EE
+.PP
+The comma delimiter allows straightforward parsing with
+.BR cut (1):
+.PP
+.EX
+xtver \-\-mux | cut \-d, \-f1   # terminal
+xtver \-\-mux | cut \-d, \-f2   # tmux
+.EE
+.TP
+.BR \-h ", " \-\-help
+Print help and exit.
+.TP
+.BR \-V ", " \-\-version
+Print version and exit.
+.
 .SH EXIT STATUS
 .TP
 .B 0
 Version string successfully obtained and printed.
 .TP
 .B 1
-Any failure: no TTY, terminal does not support XTVERSION, timeout, or
-parse error.
+Any failure: no TTY, terminal does not support XTVERSION, timeout,
+parse error, or
+.B \-\-mux
+used outside tmux.
 .
 .SH ENVIRONMENT
 .TP
@@ -77,6 +109,21 @@ if version=$(xtver 2>/dev/null); then
 else
     echo "terminal does not support XTVERSION"
 fi
+.EE
+.
+.PP
+Print terminal and tmux version (inside tmux):
+.PP
+.EX
+$ xtver \-\-mux
+WezTerm 20240203\-110809\-5046fc22,tmux 3.3a
+.EE
+.PP
+Extract just the tmux version:
+.PP
+.EX
+$ xtver \-\-mux | cut \-d, \-f2
+tmux 3.3a
 .EE
 .
 .SH NOTES

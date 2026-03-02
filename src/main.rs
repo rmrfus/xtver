@@ -10,14 +10,34 @@ use clap::Parser;
     about = "Query the terminal emulator's name and version via XTVERSION",
     version
 )]
-struct Cli {}
+struct Cli {
+    /// Also append the tmux version to the output (requires running inside tmux).
+    /// Output format: <terminal>,tmux <version>
+    #[arg(long)]
+    mux: bool,
+}
 
 fn main() {
-    Cli::parse();
+    let cli = Cli::parse();
+
+    if cli.mux && !in_tmux() {
+        eprintln!("error: --mux requires running inside tmux");
+        std::process::exit(1);
+    }
 
     match query_xtversion() {
-        Ok(version) => {
-            println!("{}", version);
+        Ok(terminal) => {
+            if cli.mux {
+                match tmux_version() {
+                    Ok(mux) => println!("{},{}", terminal, mux),
+                    Err(e) => {
+                        eprintln!("error: {}", e);
+                        std::process::exit(1);
+                    }
+                }
+            } else {
+                println!("{}", terminal);
+            }
             std::process::exit(0);
         }
         Err(e) => {
@@ -25,6 +45,27 @@ fn main() {
             std::process::exit(1);
         }
     }
+}
+
+fn tmux_version() -> Result<String, String> {
+    let out = std::process::Command::new("tmux")
+        .args(["display-message", "-p", "#{version}"])
+        .output()
+        .map_err(|e| format!("tmux: {}", e))?;
+
+    if !out.status.success() {
+        return Err("tmux display-message failed".to_string());
+    }
+
+    let v = String::from_utf8(out.stdout)
+        .map(|s| s.trim().to_string())
+        .map_err(|e| format!("tmux: invalid utf-8: {}", e))?;
+
+    if v.is_empty() {
+        return Err("tmux: empty version string".to_string());
+    }
+
+    Ok(format!("tmux {}", v))
 }
 
 fn in_tmux() -> bool {
