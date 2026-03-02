@@ -23,14 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
+      - name: Add Rust target
+        run: rustup target add ${{ matrix.target }}
 
       - uses: Swatinem/rust-cache@v2
 
       - name: Install cargo-zigbuild
-        run: pip install ziglang && cargo install cargo-zigbuild --locked
+        run: pip install ziglang && cargo install cargo-zigbuild
 
       - name: Build
         run: cargo zigbuild --target ${{ matrix.target }} --release --locked
