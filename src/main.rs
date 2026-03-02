@@ -11,7 +11,7 @@ use clap::Parser;
     version
 )]
 struct Cli {
-    /// Also append the tmux version to the output (requires running inside tmux).
+    /// Also append the tmux version to the output (no-op outside tmux).
     /// Output format: <terminal>,tmux <version>
     #[arg(long)]
     mux: bool,
