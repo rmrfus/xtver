@@ -52,6 +52,7 @@ jobs:
         run: |
           cp xtver-x86_64-linux/xtver /tmp/xtver-x86_64-linux
           cp xtver-aarch64-linux/xtver /tmp/xtver-aarch64-linux
+          rm -rf xtver-x86_64-linux xtver-aarch64-linux
           mv /tmp/xtver-x86_64-linux .
           mv /tmp/xtver-aarch64-linux .
 
