@@ -23,6 +23,9 @@
         version = "0.1.0";
         src = self;
         cargoLock.lockFile = ./Cargo.lock;
+        postInstall = ''
+          install -Dm644 ${self}/man/man1/xtver.1 $out/share/man/man1/xtver.1
+        '';
       };
 
       devShells.${system}.default = pkgs.mkShell {

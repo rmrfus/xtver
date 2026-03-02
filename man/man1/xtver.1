@@ -1,0 +1,96 @@
+.TH XTVER 1 "2026-03-02" "xtver 0.1.0" "User Commands"
+.
+.SH NAME
+xtver \- query the terminal emulator's name and version via XTVERSION
+.
+.SH SYNOPSIS
+.B xtver
+.
+.SH DESCRIPTION
+.B xtver
+sends the XTVERSION escape sequence
+.RB ( "CSI > q" )
+to the terminal via
+.IR /dev/tty ,
+reads the DCS response, prints the version string to stdout, and exits.
+.PP
+If the terminal does not respond within 2 seconds, or if
+.I /dev/tty
+is unavailable, an error is printed to stderr and the program exits with
+status 1.
+.PP
+Works correctly when stdin or stdout are redirected, since the terminal
+device is accessed directly.
+.
+.SH EXIT STATUS
+.TP
+.B 0
+Version string successfully obtained and printed.
+.TP
+.B 1
+Any failure: no TTY, terminal does not support XTVERSION, timeout, or
+parse error.
+.
+.SH ENVIRONMENT
+.TP
+.B TMUX
+If set, the query is wrapped in a tmux DCS passthrough sequence so it
+reaches the outer terminal.
+See
+.B TMUX
+section below.
+.
+.SH TMUX
+Inside a tmux session,
+.B xtver
+automatically wraps the query in a DCS passthrough sequence:
+.PP
+.EX
+ESC P tmux ; ESC ESC [ > q ESC \e
+.EE
+.PP
+This requires passthrough to be enabled in
+.IR tmux.conf :
+.PP
+.EX
+set \-g allow\-passthrough on
+.EE
+.PP
+Without this option, tmux silently drops the passthrough and
+.B xtver
+will time out with exit status 1.
+Nested tmux sessions are not supported.
+.
+.SH EXAMPLES
+Print the terminal version:
+.PP
+.EX
+$ xtver
+WezTerm 20240203\-110809\-5046fc22
+.EE
+.PP
+Use in a script:
+.PP
+.EX
+if version=$(xtver 2>/dev/null); then
+    echo "terminal: $version"
+else
+    echo "terminal does not support XTVERSION"
+fi
+.EE
+.
+.SH NOTES
+XTVERSION is supported by most modern terminal emulators: WezTerm, kitty,
+Alacritty, foot, XTerm, iTerm2, and others.
+Older terminals and plain terminal multiplexers will not respond.
+.
+.SH SEE ALSO
+.BR xterm (1)
+.
+.SH AUTHORS
+Ivan Grynov <rmrf@x123.net>
+.
+.SH LICENSE
+GPL-3.0-only. See
+.UR https://www.gnu.org/licenses/gpl-3.0.html
+.UE

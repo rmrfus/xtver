@@ -9,6 +9,7 @@ class Xtver < Formula
 
   def install
     system "cargo", "install", *std_cargo_args
+    man1.install "man/man1/xtver.1"
   end
 
   test do
