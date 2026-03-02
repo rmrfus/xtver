@@ -20,7 +20,7 @@
     in {
       packages.${system}.default = pkgs.rustPlatform.buildRustPackage {
         pname = "xtver";
-        version = "0.1.0";
+        version = "0.1.1";
         src = self;
         cargoLock.lockFile = ./Cargo.lock;
         postInstall = ''
