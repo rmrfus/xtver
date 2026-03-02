@@ -38,9 +38,14 @@ Requires `set -g allow-passthrough on` in tmux.conf.
 **Parsing**: find `>|` marker in the raw bytes, take everything after it, strip
 trailing `ESC \` if present.
 
-**--mux flag**: if set, also runs `tmux display-message -p '#{version}'` to get
-the tmux version and appends it to output as `<terminal>,tmux <version>`.
-Comma delimiter — parseable with `cut -d, -f1/2`. No-op if used outside tmux.
+**--mux flag**: if set AND inside tmux (`$TMUX` is set), runs
+`tmux display-message -p '#{version}'` and appends tmux version to output as
+`<terminal>,tmux <version>`. Comma delimiter — parseable with `cut -d, -f1/2`.
+No-op outside tmux.
+
+**Zellij**: intercepts XTVERSION and responds itself — `xtver` returns the Zellij
+version string directly, no extra config needed. Zellij has no DCS passthrough,
+so the outer terminal is unreachable from inside Zellij. `--mux` is a no-op there.
 
 ## Dev workflow
 

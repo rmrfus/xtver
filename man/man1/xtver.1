@@ -125,6 +125,17 @@ $ xtver \-\-mux | cut \-d, \-f2
 tmux 3.3a
 .EE
 .
+.SH ZELLIJ
+Zellij intercepts XTVERSION and responds with its own version string.
+.B xtver
+therefore works inside Zellij without any configuration and returns the Zellij
+version directly.
+.PP
+Zellij does not implement DCS passthrough, so there is currently no way to
+query the outer terminal from inside a Zellij session.
+.B \-\-mux
+has no effect inside Zellij.
+.
 .SH NOTES
 XTVERSION is supported by most modern terminal emulators: WezTerm, kitty,
 Alacritty, foot, XTerm, iTerm2, and others.

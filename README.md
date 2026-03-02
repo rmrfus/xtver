@@ -65,6 +65,22 @@ Without this, tmux silently drops the passthrough and `xtver` will time out with
 
 Nested tmux sessions are not supported.
 
+## Zellij
+
+Zellij intercepts XTVERSION and responds with its own version string, so `xtver`
+works inside Zellij out of the box — you get the Zellij version:
+
+```
+$ xtver
+Zellij(4301)
+```
+
+However, Zellij does not implement DCS passthrough, so there is currently no way
+to query the outer terminal from inside a Zellij session.
+
+`--mux` has no effect inside Zellij — it only appends tmux version when running
+inside tmux.
+
 ## Install
 
 ### From source
