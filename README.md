@@ -9,6 +9,46 @@ WezTerm 20240203-110809-5046fc22
 
 Exit code 0 on success, 1 on failure (terminal doesn't support XTVERSION, timeout, no TTY).
 
+## Use cases
+
+The main use case is shell profile scripts that need to apply terminal-specific
+configuration without hardcoding `$TERM` or `$TERM_PROGRAM` (which are unreliable
+over SSH and don't carry version info).
+
+### Terminal-specific shell profile
+
+```zsh
+# ~/.zshrc or ~/.bashrc
+if _term=$(xtver 2>/dev/null); then
+    case "$_term" in
+        kitty*)
+            # kitten ssh propagates kitty terminfo to the remote host automatically.
+            # For everything else (rsync, ansible, plain ssh in scripts) fall back
+            # to xterm-256color if kitty terminfo is not available on this machine.
+            alias ssh='kitten ssh'
+            alias icat='kitten icat'
+            infocmp "$TERM" &>/dev/null || export TERM=xterm-256color
+            ;;
+        Ghostty*)
+            # Ghostty has no kitten-style terminfo propagation — fall back when
+            # xterm-ghostty terminfo is missing (common on remote hosts via SSH).
+            infocmp "$TERM" &>/dev/null || export TERM=xterm-256color
+            ;;
+        iTerm2*)
+            source ~/.iterm2_shell_integration.zsh 2>/dev/null
+            alias icat='imgcat'
+            ;;
+        WezTerm*)
+            alias icat='wezterm imgcat'
+            ;;
+    esac
+fi
+unset _term
+```
+
+This works correctly over SSH because `xtver` queries the actual terminal via
+`/dev/tty`, not from environment variables.
+
 ## What is XTVERSION
 
 XTVERSION (`CSI > q`) is an escape sequence that asks the terminal to identify itself. The terminal replies with a DCS string containing its name and version. Defined by XTerm, supported by most modern terminals: WezTerm, kitty, Alacritty, foot, XTerm, iTerm2, and others.
