@@ -136,6 +136,32 @@ query the outer terminal from inside a Zellij session.
 .B \-\-mux
 has no effect inside Zellij.
 .
+.SH SHELL PROFILE INTEGRATION
+.B xtver
+is designed for use in shell profiles to apply terminal-specific configuration.
+Because it queries
+.I /dev/tty
+directly, it works correctly over SSH where environment variables like
+.B $TERM_PROGRAM
+are unreliable.
+.PP
+.EX
+if _term=$(xtver 2>/dev/null); then
+    case "$_term" in
+        kitty*)
+            alias ssh='kitten ssh'
+            infocmp "$TERM" &>/dev/null || export TERM=xterm-256color ;;
+        Ghostty*)
+            infocmp "$TERM" &>/dev/null || export TERM=xterm-256color ;;
+        iTerm2*)
+            source ~/.iterm2_shell_integration.zsh 2>/dev/null ;;
+        WezTerm*)
+            alias icat='wezterm imgcat' ;;
+    esac
+fi
+unset _term
+.EE
+.
 .SH NOTES
 XTVERSION is supported by most modern terminal emulators: WezTerm, kitty,
 Alacritty, foot, XTerm, iTerm2, and others.
