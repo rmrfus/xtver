@@ -130,12 +130,12 @@ attached to every [GitHub release](https://github.com/rmrfus/xtver/releases).
 
 ```sh
 # amd64
-curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-x86_64-linux \
-  -o /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
+curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-x86_64-linux.gz \
+  | gunzip > /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
 
 # aarch64 (Raspberry Pi, etc.)
-curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-aarch64-linux \
-  -o /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
+curl -L https://github.com/rmrfus/xtver/releases/latest/download/xtver-aarch64-linux.gz \
+  | gunzip > /usr/local/bin/xtver && chmod +x /usr/local/bin/xtver
 ```
 
 ### From source
