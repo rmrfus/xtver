@@ -48,10 +48,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
 
-      - name: Rename binaries
+      - name: Stage binaries
         run: |
-          mv xtver-x86_64-linux/xtver xtver-x86_64-linux
-          mv xtver-aarch64-linux/xtver xtver-aarch64-linux
+          cp xtver-x86_64-linux/xtver /tmp/xtver-x86_64-linux
+          cp xtver-aarch64-linux/xtver /tmp/xtver-aarch64-linux
+          mv /tmp/xtver-x86_64-linux .
+          mv /tmp/xtver-aarch64-linux .
 
       - uses: softprops/action-gh-release@v2
         with:
