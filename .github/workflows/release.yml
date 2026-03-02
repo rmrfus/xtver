@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-musl
+            artifact: xtver-x86_64-linux
+          - target: aarch64-unknown-linux-musl
+            artifact: xtver-aarch64-linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-zigbuild
+        run: pip install ziglang && cargo install cargo-zigbuild --locked
+
+      - name: Build
+        run: cargo zigbuild --target ${{ matrix.target }} --release --locked
+
+      - name: Stage binary
+        run: cp target/${{ matrix.target }}/release/xtver ${{ matrix.artifact }}
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}
