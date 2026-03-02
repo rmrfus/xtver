@@ -65,19 +65,32 @@ brew install xtver
 
 ### NixOS / nix
 
-A dev shell is provided via `flake.nix`:
-
 ```sh
-nix develop
-cargo build --release
+nix profile install github:rmrfus/xtver
 ```
 
-Or with direnv:
+Or run without installing:
 
 ```sh
-echo 'use flake' > .envrc
-direnv allow
-cargo build --release
+nix run github:rmrfus/xtver
+```
+
+Use as a flake input in your NixOS config:
+
+```nix
+inputs.xtver.url = "github:rmrfus/xtver";
+
+# then in your packages:
+inputs.xtver.packages.${system}.default
+```
+
+**Dev shell** (for hacking on xtver itself):
+
+```sh
+nix develop       # or just cd in if direnv is configured
+cargo build
+cargo test
+cargo watch -x run
 ```
 
 ## How it works
