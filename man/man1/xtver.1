@@ -27,9 +27,8 @@ device is accessed directly.
 .TP
 .B \-\-mux
 Also query and append the tmux version to the output.
-Only valid when running inside tmux (i.e.\&
-.B $TMUX
-is set); exits with status 1 otherwise.
+Has no effect when used outside tmux — output is identical to running without
+the flag.
 .PP
 Output format with
 .BR \-\-mux :
@@ -59,9 +58,9 @@ Version string successfully obtained and printed.
 .TP
 .B 1
 Any failure: no TTY, terminal does not support XTVERSION, timeout,
-parse error, or
+parse error, or tmux query failure when
 .B \-\-mux
-used outside tmux.
+is used inside tmux.
 .
 .SH ENVIRONMENT
 .TP

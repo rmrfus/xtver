@@ -40,7 +40,7 @@ trailing `ESC \` if present.
 
 **--mux flag**: if set, also runs `tmux display-message -p '#{version}'` to get
 the tmux version and appends it to output as `<terminal>,tmux <version>`.
-Comma delimiter — parseable with `cut -d, -f1/2`. Errors if used outside tmux.
+Comma delimiter — parseable with `cut -d, -f1/2`. No-op if used outside tmux.
 
 ## Dev workflow
 

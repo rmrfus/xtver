@@ -50,7 +50,7 @@ xtver --mux | cut -d, -f1   # terminal
 xtver --mux | cut -d, -f2   # tmux
 ```
 
-Exits with code 1 if used outside tmux.
+Has no effect if used outside tmux — output is the same as without the flag.
 
 ## tmux
 

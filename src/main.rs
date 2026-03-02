@@ -20,14 +20,9 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
 
-    if cli.mux && !in_tmux() {
-        eprintln!("error: --mux requires running inside tmux");
-        std::process::exit(1);
-    }
-
     match query_xtversion() {
         Ok(terminal) => {
-            if cli.mux {
+            if cli.mux && in_tmux() {
                 match tmux_version() {
                     Ok(mux) => println!("{},{}", terminal, mux),
                     Err(e) => {
