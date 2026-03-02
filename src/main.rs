@@ -3,7 +3,18 @@ use std::mem;
 use std::os::unix::io::RawFd;
 use std::time::{Duration, Instant};
 
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(
+    about = "Query the terminal emulator's name and version via XTVERSION",
+    version
+)]
+struct Cli {}
+
 fn main() {
+    Cli::parse();
+
     match query_xtversion() {
         Ok(version) => {
             println!("{}", version);
