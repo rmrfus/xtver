@@ -2,7 +2,7 @@ class Xtver < Formula
   desc "Query terminal XTVERSION and print the result"
   homepage "https://github.com/rmrfus/xtver"
   url "https://github.com/rmrfus/xtver/archive/refs/tags/v0.3.0.tar.gz"
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  sha256 "f383d00582d52121c5af7896d14d1d6b62c9d984abf3d06ffa7a0203482f5f66"
   license "GPL-3.0-only"
 
   depends_on "rust" => :build
