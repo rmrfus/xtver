@@ -53,7 +53,17 @@ This works correctly over SSH because `xtver` queries the actual terminal via
 
 XTVERSION (`CSI > q`) is an escape sequence that asks the terminal to identify itself. The terminal replies with a DCS string containing its name and version. Defined by XTerm, supported by most modern terminals: WezTerm, kitty, Alacritty, foot, XTerm, iTerm2, and others.
 
-Older terminals and terminal multiplexers acting as terminals will not respond — in that case `xtver` exits with code 1 after a 2-second timeout.
+Older terminals and terminal multiplexers acting as terminals will not respond — in that case `xtver` exits with code 1 after a 1-second timeout.
+
+## Shell profile use and hostile environments
+
+Some TUI apps (Midnight Commander, Vim/Neovim `:terminal`, Emacs `ansiterm`) own the
+terminal themselves and will never respond to XTVERSION. If `xtver` is in your shell
+profile, it will stall every subshell those apps spawn until the timeout fires.
+
+`xtver` detects these environments automatically by checking well-known environment
+variables (`MC_SID`, `VIM_TERMINAL`, `INSIDE_EMACS`, `NVIM`) and exits immediately
+with code 1 — no TTY access, no timeout wait.
 
 ## Usage
 
@@ -192,7 +202,7 @@ cargo watch -x run
 1. Opens `/dev/tty` directly — works regardless of stdin/stdout redirection.
 2. Puts the terminal in raw mode, saves original settings.
 3. Detects tmux via `$TMUX`; if present, wraps the query in DCS passthrough.
-4. Sends `ESC [ > q` and waits up to 2 seconds for a DCS response (`ESC P > | <version> ESC \`).
+4. Sends `ESC [ > q` and waits up to 1 second for a DCS response (`ESC P > | <version> ESC \`).
 5. Restores terminal settings unconditionally, parses and prints the version.
 
 Single file, two dependencies (`libc`, `clap`), no async, no tokio, nothing clever.

@@ -3,6 +3,8 @@ use std::mem;
 use std::os::unix::io::RawFd;
 use std::time::{Duration, Instant};
 
+const QUERY_TIMEOUT: Duration = Duration::from_secs(1);
+
 use clap::Parser;
 
 #[derive(Parser)]
@@ -19,6 +21,10 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
+
+    if in_hostile_env() {
+        std::process::exit(1);
+    }
 
     match query_xtversion() {
         Ok(terminal) => {
@@ -65,6 +71,18 @@ fn tmux_version() -> Result<String, String> {
 
 fn in_tmux() -> bool {
     env::var("TMUX").is_ok()
+}
+
+// Apps that intercept the tty but don't respond to XTVERSION.
+// Running inside these means we'd just burn the timeout for nothing.
+fn in_hostile_env() -> bool {
+    // MC_SID  — Midnight Commander subshell
+    // VIM_TERMINAL — Vim :terminal
+    // INSIDE_EMACS — Emacs term/ansiterm
+    // NVIM    — Neovim (terminal buffer sets this to its socket path)
+    ["MC_SID", "VIM_TERMINAL", "INSIDE_EMACS", "NVIM"]
+        .iter()
+        .any(|var| env::var(var).is_ok())
 }
 
 fn query_xtversion() -> Result<String, String> {
@@ -131,7 +149,7 @@ fn do_query(fd: RawFd) -> Result<String, String> {
         return Err(format!("write: {}", std::io::Error::last_os_error()));
     }
 
-    let response = read_until_st(fd, Duration::from_secs(2))?;
+    let response = read_until_st(fd, QUERY_TIMEOUT)?;
     parse_response(&response)
 }
 
@@ -250,5 +268,33 @@ mod tests {
         // Missing trailing ESC \ — should still extract what's there
         let input = b"\x1bP>|XTerm(379)";
         assert_eq!(parse_response(input).unwrap(), "XTerm(379)");
+    }
+
+    #[test]
+    fn test_hostile_env_each_var() {
+        // Run sequentially — we set/unset a var, check, restore.
+        // Each var is unique so parallel test threads won't interfere with each other.
+        let hostile_vars = ["MC_SID", "VIM_TERMINAL", "INSIDE_EMACS", "NVIM"];
+        for var in hostile_vars {
+            let was_set = env::var(var).is_ok();
+            if !was_set {
+                unsafe { env::set_var(var, "1") };
+            }
+            assert!(in_hostile_env(), "{var} should trigger hostile detection");
+            if !was_set {
+                unsafe { env::remove_var(var) };
+            }
+        }
+    }
+
+    #[test]
+    fn test_not_hostile_without_vars() {
+        // Verify we return false when none of the hostile vars are set.
+        // Skip if any of them happen to be set in this test environment.
+        let hostile_vars = ["MC_SID", "VIM_TERMINAL", "INSIDE_EMACS", "NVIM"];
+        if hostile_vars.iter().any(|v| env::var(v).is_ok()) {
+            return; // already in a hostile env, nothing to assert
+        }
+        assert!(!in_hostile_env());
     }
 }

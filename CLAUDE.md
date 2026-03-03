@@ -28,8 +28,14 @@ This is intentional — the tool must work when piped.
 **Raw mode**: `libc::cfmakeraw` + `libc::tcgetattr`/`tcsetattr`. Original termios is
 always restored, even on error path (restored before `libc::close`).
 
-**Timeout**: `libc::poll` with a 2-second deadline tracked via `Instant`. Polling
-per-byte in a loop — not pretty but straightforward and correct.
+**Timeout**: `libc::poll` with a 1-second deadline tracked via `Instant`. Deadline is
+`QUERY_TIMEOUT` constant at the top of the file. Polling per-byte in a loop — not
+pretty but straightforward and correct.
+
+**Hostile environment detection**: checked in `main()` before opening the TTY.
+`in_hostile_env()` checks `MC_SID` (Midnight Commander), `VIM_TERMINAL` (Vim),
+`INSIDE_EMACS` (Emacs ansiterm), `NVIM` (Neovim terminal buffer). If any is set,
+exits 1 immediately — avoids burning the timeout in apps that own the terminal.
 
 **tmux detection**: `$TMUX` env var. If set, query is wrapped in DCS passthrough:
 `ESC P tmux ; ESC ESC [ > q ESC \` (inner ESC doubled per DCS rules).
